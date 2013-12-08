@@ -6,10 +6,7 @@
  * Time: 下午10:44
  */
 
-class database {
-    private $connection;
-
-    function __construct($username, $password)
+    function dbConnect($username = "s1110297", $password = "11102974")
     {
         $db =
             "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP) " .
@@ -17,26 +14,15 @@ class database {
             "(CONNECT_DATA=(SERVER=DEDICATED) " .
             "(SID=db1011)))";
 
-        if (!$this->connection) {
-            $this->connection = oci_connect($username, $password, $db);
+        $connection = oci_connect($username, $password, $db);
+
+        if (!$connection) {
+            $e = oci_error();
+            echo $e['message']; //print error message
+        } else {
+            return $connection;
         }
-    }
 
-    function select($query) {
-        $statement = oci_parse($this->connection, $query);
-
-        oci_execute($statement);
-
-        return oci_fetch_array($statement);
-    }
-
-    /**
-     * @return resource
-     */
-    public function getConnection()
-    {
-        return $this->connection;
     }
 
 
-} 

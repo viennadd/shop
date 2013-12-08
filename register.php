@@ -1,29 +1,15 @@
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
-    <?php
-    include_once('header.php');
-    ?>
-</head>
-<body class="container">
 
+<?php
+include_once('header.php');
+?>
 
-<div class="row">
-    <?php
-    include_once('menu.php');
-    ?>
-</div>
-
-<div class="row">
-    <div class="col-md-4"></div>
 
 <div class="col-md-4">
 
     <?php if (!isset($_POST['submit'])) { ?>
 
-        <form class="form-horizontal" method="post" action="register.php">
+        <form method="post" action="register.php">
             <fieldset>
                 <div id="legend" class="">
                     <legend class="">Regiater</legend>
@@ -106,33 +92,28 @@
         </form>
 
     <?php } else {
-        //include_once('database.php');
+        include_once('database.php');
 
-        $db =
-            "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP) " .
-            "(HOST = oracleacademy.ouhk.edu.hk)(PORT=8998)) " .
-            "(CONNECT_DATA=(SERVER=DEDICATED) " .
-            "(SID=db1011)))";
-        $conn = oci_connect($userID, $password, $db);
-        if (!$conn) {
-            $e = oci_error();
-            echo $e['message']; //print error message
-        }
-
+        $conn = dbConnect();
         $statement = oci_parse($conn, 'insert into "User" (id, username, password, phone, address)'.
                                                      "values (:bv_userid, :bv_username, :bv_password, :bv_phone, :bv_address)");
 
+//        $statement = oci_parse($conn, 'insert into "User" (id, username, password, phone, address, type)'.
+//            "values (:bv_userid, :bv_username, :bv_password, :bv_phone, :bv_address, :bv_type)");
+
+        $hash_password = md5($_POST['password'].$salt);
+
         oci_bind_by_name($statement, "bv_userid", $_POST['userid']);
         oci_bind_by_name($statement, "bv_username", $_POST['full_name']);
-        oci_bind_by_name($statement, "bv_password", $_POST['password']);
+        oci_bind_by_name($statement, "bv_password", $hash_password);
         oci_bind_by_name($statement, "bv_phone", $_POST['phone']);
         oci_bind_by_name($statement, "bv_address", $_POST['address']);
-
-//        $statement = oci_parse($conn, 'select * from "User"');
+//        oci_bind_by_name($statement, "bv_type", $admin = "admin");
 
         if (oci_execute($statement)) {
             echo "<h1>register success.</h1>";
         } else {
+            echo "<h1>register failed.</h1>";
             $e = oci_error();
             echo htmlentities($e['message']);
         }
@@ -144,16 +125,6 @@
 
 </div><!-- <div class="col-md-4">-->
 
-<div class="col-md-4"></div>
-</div>
-
-
-</body>
-
-<script src="dist/js/bootstrap.min.js"></script>
-</html>
-
-
 <?php
 /**
  * Created by PhpStorm.
@@ -161,5 +132,5 @@
  * Date: 13-12-5
  * Time: 下午5:31
  */
-
+include_once('footer.php');
 ?>
