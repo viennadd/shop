@@ -1,5 +1,10 @@
 <?php
 include_once('header.php');
+if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0) {
+    echo "<h1>Permission denied.</h1>";
+    exit();
+}
+
 ?>
 
 
@@ -45,7 +50,7 @@ include_once('header.php');
                 <div class="controls">
                     <div class="input-group">
                         <span class="input-group-addon">$</span>
-                        <input class="form-control" placeholder="Price" id="prependedInput" type="text" name="price">
+                        <input class="form-control" placeholder="Price" id="prependedInput" type="number" name="price">
                     </div>
                     <p class="help-block">Supporting help text</p>
                 </div>

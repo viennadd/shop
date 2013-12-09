@@ -10,6 +10,8 @@ $salt = "OUHK_DB_ASSIGNMENT";
 
     <link rel="stylesheet" type="text/css" href="dist/css/jasny-bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="dist/css/bootstrap_yeti.min.css">
+<!--    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap-modal-bs3patch.css">-->
+<!--    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap-modal.css.css">-->
 </head>
 <body class="container">
 

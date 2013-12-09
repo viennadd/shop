@@ -2,6 +2,10 @@
 
 <?php
 include_once('header.php');
+if (isset($_SESSION['usertype'])) {
+    echo "<h1>You need Logout first.</h1>";
+    exit();
+}
 ?>
 
 

@@ -5,6 +5,8 @@
 <script src="dist/js/jquery-2.0.3.min.js"></script>
 <script src="dist/js/jasny-bootstrap.min.js"></script>
 <script src="dist/js/bootstrap.min.js"></script>
+<!--<script src="dist/js/bootstrap-modal.js"></script>-->
+<!--<script src="dist/js/bootstrap-modalmanager.js"></script>-->
 <script>
 
     var url = window.location.href;

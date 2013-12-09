@@ -1,6 +1,10 @@
 
 <?php
 include_once('header.php');
+if (isset($_SESSION['usertype'])) {
+    echo "<h1>You are already login.</h1>";
+    exit();
+}
 ?>
 
 <div class="col-md-4">
