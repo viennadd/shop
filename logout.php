@@ -6,7 +6,8 @@
  * Time: 下午5:38
  */
 
-include_once('header.php');
+// include_once('header.php');
+session_start();
 
 unset($_SESSION['userid']);
 unset($_SESSION['password']);

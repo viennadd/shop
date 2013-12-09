@@ -53,19 +53,19 @@ $salt = "OUHK_DB_ASSIGNMENT";
         oci_bind_by_name($statement, "bv_password", $password);
 
         // echo $userid.$password;
-        if (!oci_execute($statement))
-            echo "<h1>execute failed.</h1>";
+        if (oci_execute($statement)) {
 
-        $result = oci_fetch_assoc($statement);
+            $result = oci_fetch_assoc($statement);
 
-        if ($result) {
-            echo "<h1>Login Success.</h1>";
-            $_SESSION['usertype'] = $result['TYPE'];
-            $_SESSION['userid'] = $userid;
-            $_SESSION['password'] = $password;
-            header("Location: index.php");
-        } else {
-            echo "<h1>Login Failed.</h1>";
+            if ($result) {
+                echo "<h1>Login Success.</h1>";
+                $_SESSION['usertype'] = $result['TYPE'];
+                $_SESSION['userid'] = $userid;
+                $_SESSION['password'] = $password;
+                header("Location: index.php");
+            } else {
+                echo "<h1>Login Failed.</h1>";
+            }
         }
     }
 
