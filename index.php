@@ -2,44 +2,65 @@
 include_once('header.php');
 ?>
 
-
 <div class="container">
-
     <form method="post" action="index.php" id="typeChange">
         <div class="row">
-
             <!-- Select Basic -->
-            <div class="col-md-9" style="text-align: right;">
-                <label class="control-label">Choose one type of Product</label>
-            </div>
-            <div class="col-md-3">
-                <select class="form-control" name="type" onchange="typeChange();">
-                    <?php
-                    $connection = dbConnect();
-                    $statement = oci_parse($connection, "select distinct type from PRODUCT");
+            <div class="col-md-12">
 
-                    if (!isset($_POST['type']))
-                        echo "<option value='All' selected='selected'>All</option> \n";
-                    else
-                        echo "<option value='All'>All</option> \n";
+                <label class="control-label" for="type">Choose one type of Product
+                   <select class="form-control form-horizontal" name="type" onchange="typeChange();" id="type">
+                        <?php
+                        $connection = dbConnect();
+                        $statement = oci_parse($connection, "select distinct type from PRODUCT");
 
-                    if (oci_execute($statement)) {
-                        while ($type = oci_fetch_assoc($statement)) {
-                            if (isset($_POST['type']) &&
-                                strcmp($type['TYPE'], $_POST['type']) == 0)
-                                echo "<option value='{$type['TYPE']}' selected='selected'>{$type['TYPE']}</option> \n";
-                            else
-                                echo "<option value='{$type['TYPE']}'>{$type['TYPE']}</option> \n";
+                        if (!isset($_POST['type']))
+                            echo "<option value='All' selected='selected'>All</option> \n";
+                        else
+                            echo "<option value='All'>All</option> \n";
+
+                        if (oci_execute($statement)) {
+                            while ($type = oci_fetch_assoc($statement)) {
+                                if (isset($_POST['type']) &&
+                                    strcmp($type['TYPE'], $_POST['type']) == 0)
+                                    echo "<option value='{$type['TYPE']}' selected='selected'>{$type['TYPE']}</option> \n";
+                                else
+                                    echo "<option value='{$type['TYPE']}'>{$type['TYPE']}</option> \n";
+                            }
                         }
-                    }
-                    ?>
-                </select>
+                        ?>
+                    </select>
+                </label>
             </div>
         </div>
+
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <input type="hidden" name="order" value="ID" id="order_val">
+                        <button id="order" type="button" onmouseover="$('.dropdown-toggle').dropdown()" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Sort By <?php echo isset($_POST['order']) ? $_POST['order'] : 'ID';?><span class="caret"></span></button>
+                        <ul class="dropdown-menu">
+                            <li><a onclick='$("#order")[0].innerHTML = "Sort By ID<span class=\"caret\">"; $("#order_val").val("ID")'>Sort By ID</a></li>
+                            <li><a onclick='$("#order")[0].innerHTML = "Sort By PRICE<span class=\"caret\">"; $("#order_val").val("PRICE")'>Sort By Price</a></li>
+                            <li><a onclick='$("#order")[0].innerHTML = "Sort By NAME<span class=\"caret\">"; $("#order_val").val("NAME")'>Sort By Name</a></li>
+                        </ul>
+                        <!-- Button and dropdown menu -->
+                    </span>
+                    <input type="search" placeholder="Keywords" name="keyword" class="form-control">
+                    <span class="input-group-btn">
+                        <input type="submit" value="Search" class="btn btn-primary" >
+                    </span>
+                </div>
+            </div>
+        </div>
+
+
     </form>
+</div>
 
-
-
+<div class="container">
     <table class="table table-hover" >
         <thead>
         </thead>
@@ -47,15 +68,30 @@ include_once('header.php');
             <?php
 
             $connection = dbConnect();
-            $statement = oci_parse($connection, "select * from PRODUCT");
+
+            $keyword = isset($_POST['keyword']) ? '%'.$_POST['keyword'].'%' : '%';
+
+            $query_string = 'select * from PRODUCT where "NAME" like :bv_keyword or "DESCRIPTION" like :bv_keyword';
+            $order_string = '';
+            $type_string = '';
+
+            if (isset($_POST['order']))
+                $order_string = ' ORDER BY '.$_POST['order'];
+
+
 
             if (isset($_POST['type']) && strcmp($_POST['type'], "All") != 0) {
-                $statement = oci_parse($connection, "select * from PRODUCT where TYPE = :bv_type");
+                // echo $query_string.' and TYPE = :bv_type'.$order_string;
+                $statement = oci_parse($connection, $query_string.' and TYPE = :bv_type'.$order_string);
                 oci_bind_by_name($statement, "bv_type", $_POST['type']);
+            } else {
+                // echo $query_string.$order_string;
+                $statement = oci_parse($connection, $query_string.$order_string);
             }
 
-            if (oci_execute($statement)) {
+            oci_bind_by_name($statement, "bv_keyword", $keyword);
 
+            if (oci_execute($statement)) {
 
                 while ($products = oci_fetch_assoc($statement)) {
 
@@ -63,12 +99,10 @@ include_once('header.php');
                     $buy_button = "";
                     if (isset($_SESSION['userid'])) {
                         $buy_button = <<<BUY
-
                             <br><br>
                             <button class="btn btn-info btn-sm" type="button" onclick="setProductData(this.value)" name="buy" value="{$products['ID']}" data-toggle="modal" data-target="#myModal">
                                 Buy This
                             </button>
-
 BUY;
                     }
 
@@ -97,6 +131,8 @@ BUY;
                         </tr>
 ROW;
                 }
+            } else {
+                echo oci_error($statement)['message'];
             }
 
             ?>
