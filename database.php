@@ -5,24 +5,27 @@
  * Date: 13-12-6
  * Time: 下午10:44
  */
-
-    function dbConnect($username = "s1110297", $password = "11102974")
+class Database {
+    private static $connection;
+    static function dbConnect($username = "s1110297", $password = "11102974")
     {
-        $db =
-            "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP) " .
-            "(HOST = oracleacademy.ouhk.edu.hk)(PORT=8998)) " .
-            "(CONNECT_DATA=(SERVER=DEDICATED) " .
-            "(SID=db1011)))";
+        // session_start();
 
-        $connection = oci_connect($username, $password, $db);
+        if (is_null(self::$connection)) {
+            $db =
+                "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP) " .
+                "(HOST = oracleacademy.ouhk.edu.hk)(PORT=8998)) " .
+                "(CONNECT_DATA=(SERVER=DEDICATED) " .
+                "(SID=db1011)))";
 
-        if (!$connection) {
-            $e = oci_error();
-            echo $e['message']; //print error message
-        } else {
-            return $connection;
+            self::$connection = oci_connect($username, $password, $db);
+//            echo "new one ";
         }
 
+//        echo "reuse";
+        return self::$connection;
+
     }
+}
 
 

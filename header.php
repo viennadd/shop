@@ -42,7 +42,7 @@ $salt = "OUHK_DB_ASSIGNMENT";
     }
 
     function userLogin($userid, $password) {
-        $connection = dbConnect();
+        $connection = Database::dbConnect();
 
         global $salt;
         $password = md5($password.$salt);

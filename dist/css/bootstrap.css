@@ -2074,7 +2074,7 @@ textarea.input-lg {
   height: auto;
 }
 
-.has-warning .help-block,
+.has-warning .label label-warning,
 .has-warning .control-label,
 .has-warning .radio,
 .has-warning .checkbox,
@@ -2101,7 +2101,7 @@ textarea.input-lg {
   border-color: #c09853;
 }
 
-.has-error .help-block,
+.has-error .label label-warning,
 .has-error .control-label,
 .has-error .radio,
 .has-error .checkbox,
@@ -2128,7 +2128,7 @@ textarea.input-lg {
   border-color: #b94a48;
 }
 
-.has-success .help-block,
+.has-success .label label-warning,
 .has-success .control-label,
 .has-success .radio,
 .has-success .checkbox,
@@ -2159,7 +2159,7 @@ textarea.input-lg {
   margin-bottom: 0;
 }
 
-.help-block {
+.label label-warning {
   display: block;
   margin-top: 5px;
   margin-bottom: 10px;

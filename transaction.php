@@ -12,10 +12,8 @@ if (!isset($_SESSION['usertype'])) {
 }
 ?>
 
-
-
     <?php
-        $connection = dbConnect();
+        $connection = Database::dbConnect();
         if (isset($_POST['buy'])) { // user request to buy product, show transaction submitted status
             echo "<h4>Your order is waiting for payment.</h4>";
 
@@ -52,13 +50,19 @@ SUCC_INSERT;
 
         } else {                    // only request to view transaction
 
+            // if admin change transaction status
+            if (isset($_POST['tid']) && strcmp($_POST['x_tid'], "1") == 0) {
+                $statement = oci_parse($connection, "update TRANSACTION set status = 'Payment Received' where id = '{$_POST['tid']}'");
+                oci_execute($statement);
+            }
+
             $query_string = <<<QUERY_STR
                     select u.ID as userid, u.ADDRESS as address, u.PHONE as phone, u.USERNAME as fullname,
-                    p.type as type, p.imageurl, p.name, p.price,
-                    t.id, t.quantity as quantity, t.status
-                    from transaction t inner join "User" u
-                    on t.userid = u.id inner join product p
-                    on t.productid = p.id
+                            p.type as type, p.imageurl, p.name, p.price, p.description,
+                            t.id, t.quantity as quantity, t.status
+                            from transaction t inner join "User" u
+                            on t.userid = u.id inner join product p
+                            on t.productid = p.id
 QUERY_STR;
 
 
@@ -72,8 +76,17 @@ QUERY_STR;
             $statement = oci_parse($connection, $query_string);
 
             if (oci_execute($statement)) {
+
+                // show change status button if it is admin
+                $status_button = "";
+                if (strcmp($_SESSION['usertype'], "admin") == 0)
+                    $status_button = "<br><button type='submit' name='x_tid' value='1' class='btn-primary form-control'>This Transaction Payment Received</button>";
+
+
+
                 echo '<div class="row"></div>';
                 echo <<<TABLE_H
+
                     <table class="table table-hover" >
                             <thead>
                             </thead>
@@ -84,31 +97,47 @@ TABLE_H;
                     $amount = $transaction['QUANTITY'] * $transaction['PRICE'];
                     $transaction['ID'] = strtoupper(bin2hex($transaction['ID']));
 
+                    // show delivery message if it is admin
+                    $delivery_msg = "";
+                    if (strcmp($_SESSION['usertype'], "admin") == 0) {
+                        $delivery_msg = <<<DELIVERY
+                            <br/>
+                            <div><font size="4px"><strong>Delivery Information</strong><br></font></div>
+                            <div><strong>Full name: </strong><br/>{$transaction['FULLNAME']}</div>
+                            <div><strong>Contact Phone: </strong><br/>{$transaction['PHONE']}</div>
+                            <div><strong>Delivery Address: </strong><br/>{$transaction['ADDRESS']}</div>
+                            <div><strong>Quantity: </strong><br/>{$transaction['QUANTITY']}</div>
+                            <div><strong>Total Amount: </strong><br/>\${$amount}</div>
+DELIVERY;
+                    }
+
                     echo <<<TRANSACTION
                         <tr>
                             <td>
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <br/>
-                                        <img src="upload/{$transaction['IMAGEURL']}" class="img-thumbnail" style="max-height:200px; max-width:200px;"/>
+                                <form method="post">
+                                    <input type="hidden" name="tid" value="{$transaction['ID']}">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <br/>
+                                            <img src="upload/{$transaction['IMAGEURL']}" class="img-thumbnail" style="max-height:200px; max-width:200px;"/>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <br/>
+                                            <div><font size="4px"><strong>Product Information</strong><br></font></div>
+                                            <div><strong>Product Name: </strong><br/>{$transaction['NAME']}</div>
+                                            <div><strong>Product Price: </strong><br/>\${$transaction['PRICE']}</div>
+                                            <div><strong>Product Type: </strong><br/>{$transaction['TYPE']}</div>
+                                            <div><strong>Product Description: </strong><br/>{$transaction['DESCRIPTION']}</div>
+                                            <br>
+                                            <div><font size="4px"><strong>Payment Status</strong><br></font></div>
+                                            <div>{$transaction['STATUS']}</div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            {$delivery_msg}
+                                            <div>{$status_button}</div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <br/>
-                                        <!--<div><strong>Transaction ID: </strong><br/>{$transaction['ID']}</div>-->
-                                        <div><strong>Product Name: </strong><br/>{$transaction['NAME']}</div>
-                                        <div><strong>Quantity: </strong><br/>{$transaction['QUANTITY']}</div>
-                                        <div><strong>Product Price: </strong><br/>\${$transaction['PRICE']}</div>
-                                        <div><strong>Total Amount: </strong><br/>\${$amount}</div>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <br/>
-                                        <div><strong>Full name: </strong><br/>{$transaction['FULLNAME']}</div>
-                                        <div><strong>Contact Phone: </strong><br/>{$transaction['PHONE']}</div>
-                                        <div><strong>Quantity: </strong><br/>{$transaction['QUANTITY']}</div>
-                                        <div><strong>Product Price: </strong><br/>\${$transaction['PRICE']}</div>
-                                        <div><strong>Total Amount: </strong><br/>\${$amount}</div>
-                                    </div>
-                                </div>
+                                </form>
                             </td>
                         </tr>
 TRANSACTION;
@@ -124,8 +153,6 @@ TRANSACTION;
 
         }
     ?>
-
-
 
 <?php
 include_once('footer.php');

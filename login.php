@@ -22,7 +22,7 @@ if (isset($_SESSION['usertype'])) {
                 <label class="control-label" for="input01">User ID</label>
                 <div class="controls">
                     <input type="text" placeholder="User ID" class="form-control" name="userid">
-                    <p class="help-block">Supporting help text</p>
+                    <p class="label label-warning">Supporting help text</p>
                 </div>
             </div>
 
@@ -32,7 +32,7 @@ if (isset($_SESSION['usertype'])) {
                 <label class="control-label" for="input01">Password</label>
                 <div class="controls">
                     <input type="password" placeholder="Password" class="form-control" name="password">
-                    <p class="help-block">Supporting help text</p>
+                    <p class="label label-warning">Supporting help text</p>
                 </div>
             </div>
 

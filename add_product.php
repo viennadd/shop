@@ -23,7 +23,7 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
                 <label class="control-label" for="input01">Product Name</label>
                 <div class="controls">
                     <input type="text" placeholder="Product Name" class="form-control" name="name">
-                    <p class="help-block">Supporting help text</p>
+                    <p class="label label-warning">Supporting help text</p>
                 </div>
             </div>
 
@@ -52,7 +52,7 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
                         <span class="input-group-addon">$</span>
                         <input class="form-control" placeholder="Price" id="prependedInput" type="number" name="price">
                     </div>
-                    <p class="help-block">Supporting help text</p>
+                    <p class="label label-warning">Supporting help text</p>
                 </div>
 
             </div>
@@ -93,7 +93,7 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
 
 <?php } else {
 
-    $connection = dbConnect();
+    $connection = Database::dbConnect();
 
 
     $hash_image = md5_file($_FILES["image"]["tmp_name"]);

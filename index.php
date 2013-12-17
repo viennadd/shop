@@ -11,7 +11,7 @@ include_once('header.php');
                 <label class="control-label" for="type">Choose one type of Product
                    <select class="form-control form-horizontal" name="type" onchange="typeChange();" id="type">
                         <?php
-                        $connection = dbConnect();
+                        $connection = Database::dbConnect();
                         $statement = oci_parse($connection, "select distinct type from PRODUCT");
 
                         if (!isset($_POST['type']))
@@ -67,7 +67,7 @@ include_once('header.php');
         <tbody>
             <?php
 
-            $connection = dbConnect();
+            $connection = Database::dbConnect();
 
             $keyword = isset($_POST['keyword']) ? '%'.$_POST['keyword'].'%' : '%';
 

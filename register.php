@@ -24,7 +24,7 @@ if (isset($_SESSION['usertype'])) {
                     <label class="control-label" for="input01">User ID</label>
                     <div class="controls">
                         <input type="text" placeholder="User ID" class="form-control" name="userid">
-                        <span class="help-block">Supporting help text</span>
+                        <span class="label label-warning">Supporting help text</span>
                     </div>
                 </div>
 
@@ -36,7 +36,7 @@ if (isset($_SESSION['usertype'])) {
                     <label class="control-label" for="input01">Password</label>
                     <div class="controls">
                         <input type="password" placeholder="Password" class="form-control" name="password">
-                        <p class="help-block">Supporting help text</p>
+                        <p class="label label-warning">Supporting help text</p>
                     </div>
                 </div>
 
@@ -46,7 +46,7 @@ if (isset($_SESSION['usertype'])) {
                     <label class="control-label" for="input01">Password (Repeat)</label>
                     <div class="controls">
                         <input type="password" placeholder="Password" class="form-control" name="password_repeat">
-                        <p class="help-block">Supporting help text</p>
+                        <p class="label label-warning">Supporting help text</p>
                     </div>
                 </div>
 
@@ -56,7 +56,7 @@ if (isset($_SESSION['usertype'])) {
                     <label class="control-label" for="input01">Full name</label>
                     <div class="controls">
                         <input type="text" placeholder="Full name" class="form-control" name="full_name">
-                        <p class="help-block">Supporting help text</p>
+                        <p class="label label-warning">Supporting help text</p>
                     </div>
                 </div>
 
@@ -66,7 +66,7 @@ if (isset($_SESSION['usertype'])) {
                     <label class="control-label" for="input01">Contact phone</label>
                     <div class="controls">
                         <input type="text" placeholder="Contact phone" class="form-control" name="phone">
-                        <p class="help-block">Supporting help text</p>
+                        <p class="label label-warning">Supporting help text</p>
                     </div>
                 </div>
 
@@ -98,7 +98,7 @@ if (isset($_SESSION['usertype'])) {
     <?php } else {
         include_once('database.php');
 
-        $conn = dbConnect();
+        $conn = Database::dbConnect();
         $statement = oci_parse($conn, 'insert into "User" (id, username, password, phone, address)'.
                                                      "values (:bv_userid, :bv_username, :bv_password, :bv_phone, :bv_address)");
 
