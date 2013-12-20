@@ -13,7 +13,7 @@ if (isset($_SESSION['usertype'])) {
 
     <?php if (!isset($_POST['submit'])) { ?>
 
-        <form method="post" action="register.php">
+        <form method="post" action="register.php" id="regForm" onsubmit="return checkFields()">
             <fieldset>
                 <div id="legend" class="">
                     <legend class="">Regiater</legend>
@@ -23,8 +23,8 @@ if (isset($_SESSION['usertype'])) {
                     <!-- Text input-->
                     <label class="control-label" for="input01">User ID</label>
                     <div class="controls">
-                        <input type="text" placeholder="User ID" class="form-control" name="userid">
-                        <span class="label label-warning">Supporting help text</span>
+                        <input type="text" placeholder="User ID" class="form-control" name="userid" required="">
+                        <span class="label label-warning"></span>
                     </div>
                 </div>
 
@@ -35,8 +35,8 @@ if (isset($_SESSION['usertype'])) {
                     <!-- Text input-->
                     <label class="control-label" for="input01">Password</label>
                     <div class="controls">
-                        <input type="password" placeholder="Password" class="form-control" name="password">
-                        <p class="label label-warning">Supporting help text</p>
+                        <input type="password" id="password" placeholder="Password" class="form-control" name="password" required="">
+                        <p class="label label-warning"></p>
                     </div>
                 </div>
 
@@ -45,8 +45,8 @@ if (isset($_SESSION['usertype'])) {
                     <!-- Text input-->
                     <label class="control-label" for="input01">Password (Repeat)</label>
                     <div class="controls">
-                        <input type="password" placeholder="Password" class="form-control" name="password_repeat">
-                        <p class="label label-warning">Supporting help text</p>
+                        <input type="password" id="password2" placeholder="Password" class="form-control" name="password_repeat" required="">
+                        <p class="label label-warning"></p>
                     </div>
                 </div>
 
@@ -55,8 +55,8 @@ if (isset($_SESSION['usertype'])) {
                     <!-- Text input-->
                     <label class="control-label" for="input01">Full name</label>
                     <div class="controls">
-                        <input type="text" placeholder="Full name" class="form-control" name="full_name">
-                        <p class="label label-warning">Supporting help text</p>
+                        <input type="text" placeholder="Full name" class="form-control" name="full_name" required="">
+                        <p class="label label-warning"></p>
                     </div>
                 </div>
 
@@ -66,7 +66,7 @@ if (isset($_SESSION['usertype'])) {
                     <label class="control-label" for="input01">Contact phone</label>
                     <div class="controls">
                         <input type="text" placeholder="Contact phone" class="form-control" name="phone">
-                        <p class="label label-warning">Supporting help text</p>
+                        <p class="label label-warning"></p>
                     </div>
                 </div>
 
@@ -99,6 +99,29 @@ if (isset($_SESSION['usertype'])) {
         include_once('database.php');
 
         $conn = Database::dbConnect();
+
+
+        $statement = oci_parse($conn, 'select id from "User" where id = :bv_userid');
+        oci_bind_by_name($statement, "bv_userid", $_POST['userid']);
+
+        if (oci_execute($statement)) {
+            $nRow = 0;
+            while (oci_fetch_assoc($statement))
+                $nRow++;
+
+            if ($nRow >= 1) {
+                echo("User Id already exist.");
+                exit();
+            }
+        }
+
+
+        if (strcmp($_POST['password'], $_POST['password_repeat']) != 0) {
+            echo("password need repeat exactly.");
+            exit();
+        }
+
+
         $statement = oci_parse($conn, 'insert into "User" (id, username, password, phone, address)'.
                                                      "values (:bv_userid, :bv_username, :bv_password, :bv_phone, :bv_address)");
 
@@ -118,8 +141,8 @@ if (isset($_SESSION['usertype'])) {
             echo "<h1>register success.</h1>";
         } else {
             echo "<h1>register failed.</h1>";
-            $e = oci_error();
-            echo htmlentities($e['message']);
+            $e = oci_error($statement);
+            echo $e['message'];
         }
 
         ?>
@@ -138,3 +161,25 @@ if (isset($_SESSION['usertype'])) {
  */
 include_once('footer.php');
 ?>
+
+<script src="dist/js/jquery.validate.min.js"></script>
+<script>
+
+    function checkFields() {
+        if ($("#password").val().length < 5) {
+            alert("length of password need >= 5 digits.")
+            return false;
+        }
+
+        if (! ($("#password").val() === $("#password2").val())) {
+            alert("Password need repeat twice exactly.")
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+
+</script>

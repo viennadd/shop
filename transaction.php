@@ -128,6 +128,8 @@ DELIVERY;
                                             <div><strong>Product Price: </strong><br/>\${$transaction['PRICE']}</div>
                                             <div><strong>Product Type: </strong><br/>{$transaction['TYPE']}</div>
                                             <div><strong>Product Description: </strong><br/>{$transaction['DESCRIPTION']}</div>
+                                            <div><strong>Quantity: </strong><br/>{$transaction['QUANTITY']}</div>
+                                            <div><strong>Total Amount: </strong><br/>\${$amount}</div>
                                             <br>
                                             <div><font size="4px"><strong>Payment Status</strong><br></font></div>
                                             <div>{$transaction['STATUS']}</div>

@@ -69,9 +69,12 @@ include_once('header.php');
 
             $connection = Database::dbConnect();
 
+            if (isset($_POST['keyword']))
+                echo "<h3>Results found with keyword '{$_POST['keyword']}'</h3>";
+
             $keyword = isset($_POST['keyword']) ? '%'.$_POST['keyword'].'%' : '%';
 
-            $query_string = 'select * from PRODUCT where "NAME" like :bv_keyword or "DESCRIPTION" like :bv_keyword';
+            $query_string = 'select * from PRODUCT where ("NAME" like :bv_keyword or "DESCRIPTION" like :bv_keyword)';
             $order_string = '';
             $type_string = '';
 
@@ -80,7 +83,7 @@ include_once('header.php');
 
 
 
-            if (isset($_POST['type']) && strcmp($_POST['type'], "All") != 0) {
+            if (isset($_POST['type']) && (strcmp($_POST['type'], "All") != 0)) {
                 // echo $query_string.' and TYPE = :bv_type'.$order_string;
                 $statement = oci_parse($connection, $query_string.' and TYPE = :bv_type'.$order_string);
                 oci_bind_by_name($statement, "bv_type", $_POST['type']);
@@ -93,8 +96,12 @@ include_once('header.php');
 
             if (oci_execute($statement)) {
 
+                $has_result = false;
+
+
                 while ($products = oci_fetch_assoc($statement)) {
 
+                    $has_result = true;
                     $products['ID'] = strtoupper(bin2hex($products['ID']));
                     $buy_button = "";
                     if (isset($_SESSION['userid'])) {
@@ -134,6 +141,9 @@ ROW;
             } else {
                 echo oci_error($statement)['message'];
             }
+
+            if (!$has_result)
+                echo "<h1>No match Product found.</h1>";
 
             ?>
         </tbody>

@@ -6,12 +6,11 @@ $salt = "OUHK_DB_ASSIGNMENT";
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Register</title>
+    <title><?php echo basename($_SERVER["SCRIPT_FILENAME"], '.php');?></title>
 
     <link rel="stylesheet" type="text/css" href="dist/css/jasny-bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="dist/css/bootstrap_yeti.min.css">
-<!--    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap-modal-bs3patch.css">-->
-<!--    <link rel="stylesheet" type="text/css" href="dist/css/bootstrap-modal.css.css">-->
+
 </head>
 <body class="container">
 
@@ -64,9 +63,20 @@ $salt = "OUHK_DB_ASSIGNMENT";
                 $_SESSION['password'] = $password;
                 header("Location: index.php");
             } else {
-                echo "<h1>Login Failed.</h1>";
+                echo "<h1>User ID and Password is not match.</h1>";
             }
         }
+    }
+
+    function is_image($path) {
+        $a = getimagesize($path);
+        $image_type = $a[2];
+
+        if(in_array($image_type , array(IMAGETYPE_GIF , IMAGETYPE_JPEG ,IMAGETYPE_PNG , IMAGETYPE_BMP)))
+        {
+            return true;
+        }
+        return false;
     }
 
 

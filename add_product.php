@@ -11,7 +11,7 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
 <div class="col-md-4">
 
 <?php if (!isset($_POST['submit'])) { ?>
-    <form method="post" action="add_product.php" enctype="multipart/form-data">
+    <form method="post" action="add_product.php" enctype="multipart/form-data" onsubmit="return positivePrice();">
         <fieldset>
             <div id="legend" class="">
                 <legend class="">Add Product</legend>
@@ -22,8 +22,8 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
                 <!-- Text input-->
                 <label class="control-label" for="input01">Product Name</label>
                 <div class="controls">
-                    <input type="text" placeholder="Product Name" class="form-control" name="name">
-                    <p class="label label-warning">Supporting help text</p>
+                    <input type="text" id="product_name" placeholder="Product Name" class="form-control" name="name">
+                    <p class="label label-warning"></p>
                 </div>
             </div>
 
@@ -33,10 +33,12 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
                 <label class="control-label">Product Type</label>
                 <div class="controls">
                     <select class="form-control" name="type">
-                        <option>Enter</option>
-                        <option>Your</option>
-                        <option>Options</option>
-                        <option>Here!</option></select>
+                        <option>Monitor</option>
+                        <option>Mouse</option>
+                        <option>Keyboard</option>
+                        <option>SSD</option>
+                        <option>Memory</option>
+                    </select>
                 </div>
 
             </div>
@@ -50,9 +52,9 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
                 <div class="controls">
                     <div class="input-group">
                         <span class="input-group-addon">$</span>
-                        <input class="form-control" placeholder="Price" id="prependedInput" type="number" name="price">
+                        <input class="form-control" placeholder="Price" id="price" type="number" name="price" required="">
                     </div>
-                    <p class="label label-warning">Supporting help text</p>
+                    <p class="label label-warning"></p>
                 </div>
 
             </div>
@@ -65,7 +67,7 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
                     <div class="fileinput fileinput-new" data-provides="fileinput">
                         <div class="fileinput-preview thumbnail" data-trigger="fileinput" style="width: 200px; height: 150px;"></div>
                         <div>
-                            <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input type="file" name="image"></span>
+                            <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input type="file" id="imagefile" required="" name="image"></span>
                             <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
                         </div>
                     </div>
@@ -95,6 +97,10 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
 
     $connection = Database::dbConnect();
 
+    if (!is_image($_FILES["image"]["tmp_name"])) {
+        echo "<h1>Product Image need a image file.</h1>";
+        exit();
+    }
 
     $hash_image = md5_file($_FILES["image"]["tmp_name"]);
     if (!file_exists("upload/" . $hash_image))
@@ -103,6 +109,8 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
             "upload/" . $hash_image);
         // echo "Stored in: " . "upload/" . md5_file($_FILES["image"]["tmp_name"]);
     }
+
+
 
     $statement = oci_parse($connection, 'insert into "PRODUCT" ("NAME", "TYPE", description, price, imageUrl) '.
                                         "values (:bv_name, :bv_type, :bv_description, :bv_price, :bv_imageUrl)");
@@ -134,3 +142,25 @@ if (!isset($_SESSION['usertype']) || strcmp($_SESSION['usertype'], "admin") != 0
  */
 include_once('footer.php');
 ?>
+
+<script>
+    function isNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    function positivePrice() {
+        if (!isNumber($("#price").val())) {
+            alert("Product Price Need input a number.");
+            return false;
+        }
+
+        $("#price").val(eval(price.value));
+        if (price.value <= 0) {
+            alert("Positive Product price needed.");
+            return false;
+
+        }
+
+        return true;
+    }
+</script>
